@@ -5,5 +5,27 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.102"
-serde = "1.0.228"
+regex = {version = "0.1.9", package = "regex-lite"}
+serde = {version="1.0.228", features = ["derive"]}
 toml = "1.1.2"
+which = "8.0.2"
+
+
+
+
+[lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+missing_panics_doc = "deny"
+missing_assert_message = "deny"
+as_underscore = "deny"
+wildcard_imports = "deny"
+too_long_first_doc_paragraph = "deny"
+print_stdout = "deny"
+
+little_endian_bytes = "deny"
+host_endian_bytes = "deny"
+
+doc_broken_link = "deny" 
