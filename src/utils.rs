@@ -1,5 +1,7 @@
 use std::{
-    fs, io::{self, Write}, path, process
+    fs,
+    io::{self, Write},
+    path, process,
 };
 
 pub fn readln() -> String {
@@ -16,21 +18,21 @@ pub fn prompt(message: &str) -> String {
     print!("{message}");
 
     let _ = io::stdout().flush();
-    
+
     readln()
 }
 
-/// Atomically write a file 
-/// 
+/// Atomically write a file
+///
 /// To do that, it needs to know the path for a temporary file, usually on the same disk device.
-/// 
+///
 /// The purpose of this operation is to be crash safe. User stopping the program mid-execution will not corrupt important
-/// configuration files and break the entire project. 
+/// configuration files and break the entire project.
 pub fn awrite_file<P1, C, P2>(path: P1, contents: C, temp: P2) -> io::Result<()>
-where 
+where
     P1: AsRef<path::Path>,
     P2: AsRef<path::Path>,
-    C: AsRef<[u8]> 
+    C: AsRef<[u8]>,
 {
     fs::write(&temp, contents)?;
     fs::rename(&temp, path)
@@ -47,7 +49,7 @@ pub fn silent_command(commmand: &str, arguments: &[&str]) -> io::Result<process:
 }
 
 /// Check whether the provided path exists and if not - create it
-/// 
+///
 /// Note that this doesn't actually check if the file is a directory
 pub fn get_or_make_dir(path: &path::Path) -> io::Result<path::PathBuf> {
     if fs::exists(path)? {

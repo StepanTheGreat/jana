@@ -1,10 +1,10 @@
 use std::fs;
 
 use crate::{
-    commands::CommandHandler, 
-    consts::{PROJECT_CLASSES, PROJECT_SOURCES}, 
-    project::{get_project_source_files, get_project_target, read_project_file}, 
-    tools::Java
+    commands::CommandHandler,
+    consts::{PROJECT_CLASSES, PROJECT_SOURCES},
+    project::{get_project_source_files, get_project_target, read_project_file},
+    tools::Java,
 };
 
 pub struct BuildCommand;
@@ -18,7 +18,7 @@ impl CommandHandler for BuildCommand {
     }
 
     fn handle(&mut self, ctx: super::CommandCtx) -> anyhow::Result<()> {
-        let path= ctx.cwd;
+        let path = ctx.cwd;
 
         let config = read_project_file(&path)?;
         let java = Java::get()?;
@@ -33,7 +33,7 @@ impl CommandHandler for BuildCommand {
         let sources_file = target.join(PROJECT_SOURCES);
 
         // Write a temporary sources.txt file which lists all our files. We don't care about atomicity here, since this file gets generated
-        // every single time. 
+        // every single time.
         {
             let mut sources = String::new();
             for src_file in get_project_source_files(&path, lang_ext)? {
@@ -45,7 +45,7 @@ impl CommandHandler for BuildCommand {
 
         // Compile our files
         java.compile(&sources_file, &out_dir)?;
-        
+
         Ok(())
     }
 }

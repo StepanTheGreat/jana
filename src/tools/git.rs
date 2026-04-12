@@ -3,16 +3,14 @@ use std::path;
 use crate::utils::silent_command;
 
 pub struct Git {
-    git: path::PathBuf
+    git: path::PathBuf,
 }
 
 impl Git {
     pub fn get() -> anyhow::Result<Self> {
         let git = which::which("git")?;
 
-        Ok(Self {
-            git
-        })
+        Ok(Self { git })
     }
 
     /// Initialize a git project at the provided path

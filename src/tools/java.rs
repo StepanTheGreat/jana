@@ -4,16 +4,14 @@ use std::{env, io, path, process};
 pub struct Java {
     java: path::PathBuf,
     javac: path::PathBuf,
-    jar: path::PathBuf
+    jar: path::PathBuf,
 }
 
 impl Java {
     /// Get a java instance if it's present on the machine
     pub fn get() -> anyhow::Result<Self> {
-
         // If JAVA_HOME is invalid, this tool will think that java doesn't actually exist
-        let java_home = env::var("JAVA_HOME")
-            .map(|path| path::PathBuf::from(path).join("./bin"));
+        let java_home = env::var("JAVA_HOME").map(|path| path::PathBuf::from(path).join("./bin"));
 
         let java_path = java_home.clone().unwrap_or_default().join("java");
         let javac_path = java_home.clone().unwrap_or_default().join("javac");
@@ -23,11 +21,7 @@ impl Java {
         let javac = which::which(javac_path)?;
         let jar = which::which(jar_path)?;
 
-        Ok(Self {
-            java,
-            javac,
-            jar
-        })
+        Ok(Self { java, javac, jar })
     }
 
     /// Compile provided source file **pattern** into the provided output directory
@@ -35,7 +29,7 @@ impl Java {
         process::Command::new(&self.javac)
             .arg("-d")
             .arg(dst)
-            .arg(format!("@{}", sources_file.to_string_lossy()))        
+            .arg(format!("@{}", sources_file.to_string_lossy()))
             .status()
             .map(|_| ())
     }
