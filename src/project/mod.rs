@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, VecDeque}, fs::{self, FileType}, io, path::{self, PathBuf}};
+use std::{collections::HashMap, fs, io, path::{self, PathBuf}};
 
 use serde::{Serialize, Deserialize};
 
@@ -130,11 +130,8 @@ pub fn get_project_source_files(path: &path::Path, ext: &str) -> anyhow::Result<
     let mut dir_stack: Vec<PathBuf> = Vec::with_capacity(16);
     dir_stack.push(path.join(PROJECT_SRC));
 
-    while !dir_stack.is_empty() {
+    while let Some(current_dir) = dir_stack.pop() {
         
-        // Pop the top directory from the stack
-        let current_dir = dir_stack.pop().unwrap();
-
         // For each of its files
         for fentry in fs::read_dir(current_dir)? {
             let file = fentry?;

@@ -2,7 +2,7 @@ use std::fs;
 
 use crate::{
     commands::CommandHandler, 
-    consts::{PROJECT_CLASSES, PROJECT_SOURCES, PROJECT_TARGET}, 
+    consts::{PROJECT_CLASSES, PROJECT_SOURCES}, 
     project::{get_project_source_files, get_project_target, read_project_file}, 
     tools::Java
 };
@@ -38,7 +38,7 @@ impl CommandHandler for BuildCommand {
             let mut sources = String::new();
             for src_file in get_project_source_files(&path, lang_ext)? {
                 sources.push_str(&src_file.to_string_lossy());
-                sources.push_str("\n");
+                sources.push('\n');
             }
             fs::write(&sources_file, sources)?;
         }

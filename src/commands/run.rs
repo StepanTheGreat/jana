@@ -15,7 +15,7 @@ impl CommandHandler for RunCommand {
     }
 
     fn handle(&mut self, ctx: super::CommandCtx) -> anyhow::Result<()> {
-        let path = &ctx.cwd;
+        let path = ctx.cwd;
 
         let config = read_project_file(&path)?;
         let java = Java::get()?;
