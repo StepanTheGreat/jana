@@ -1,9 +1,12 @@
 use std::{collections::HashMap, path::PathBuf};
 
-use crate::commands::{help::HelpCommand, init::InitCommand};
+use crate::commands::{build::BuildCommand, clean::CleanCommand, help::HelpCommand, init::InitCommand, run::RunCommand};
 
 mod help;
 mod init;
+mod build;
+mod run;
+mod clean;
 
 /// Context passed to each command
 struct CommandCtx<'a> {
@@ -17,16 +20,29 @@ struct CommandCtx<'a> {
     pub command_docs: &'a HashMap<String, String> 
 }
 
+impl<'a> Clone for CommandCtx<'a> {
+    fn clone(&self) -> Self {
+        Self {
+            cwd: self.cwd.clone(),
+            args: self.args,
+            command_docs: self.command_docs
+        }
+    }
+}
+
 /// A command handler... *handles* commands. It's dispatched dynamically and performs various tasks
 trait CommandHandler: 'static {
     /// All names by the which this command handler can be called
     fn name(&self) -> &str;
 
     /// The description of the command
-    fn description(&self) -> &str;
+    fn description(&self) -> &str { "" }
 
     /// The description of command's parameters and arguments
-    fn params(&self) -> &str;
+    fn params(&self) -> &str { "" }
+
+    /// A list of commands that must be run before this one
+    fn requires(&self) -> Option<&str> { None }
 
     /// The command handler itself
     fn handle(&mut self, ctx: CommandCtx) -> anyhow::Result<()>;
@@ -68,16 +84,37 @@ impl CommandRegistry {
     }
 
     pub fn handle_command(&mut self, command: &str, cwd: PathBuf, args: &[String]) -> anyhow::Result<()> {
-        let handler = self.command_handlers.get_mut(command)
-            .unwrap_or_else(|| panic!("No command {command}"));
-
+        
+        // Construct command context
         let ctx = CommandCtx { 
             cwd, 
             args, 
             command_docs: &self.command_docs
         };
 
-        handler.handle(ctx)
+        // Check for requirements, and if one exists - run it
+        {
+            // Get our requirement for the current command
+            let requirement = self.command_handlers.get(command)
+                .unwrap_or_else(|| panic!("No command {command}"))
+                .requires()
+                .map(|r| r.to_owned());
+    
+            // If it's not None
+            if let Some(requires) = requirement {
+                assert_ne!(requires, command, "A command can't require to execute itself");
+    
+                // Execute it first
+                self.command_handlers.get_mut(&requires)
+                    .unwrap_or_else(|| panic!("No command {command}"))
+                    .handle(ctx.clone())?;
+            }
+        }
+
+        // Finally, execute our command
+        self.command_handlers.get_mut(command)
+            .unwrap_or_else(|| panic!("No command {command}"))
+            .handle(ctx)
     }
 }
 
@@ -86,4 +123,7 @@ pub fn command_registry() -> CommandRegistry {
     CommandRegistry::new()
         .add_command(HelpCommand)
         .add_command(InitCommand)
+        .add_command(BuildCommand)
+        .add_command(RunCommand)
+        .add_command(CleanCommand)
 }

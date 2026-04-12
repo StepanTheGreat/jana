@@ -1,4 +1,4 @@
-package %package%
+package %package%;
 
 public class Lib {
     public static int sum(int a, int b) {
