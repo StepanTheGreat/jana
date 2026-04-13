@@ -39,6 +39,19 @@ impl ProjectLanguage {
     }
 }
 
+/// The [lib] section of the package
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ProjectLibSection {
+    pub path: PathBuf
+}
+
+/// The [[bin]] section of the package
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ProjectBinSection {
+    pub name: String,
+    pub path: PathBuf
+}
+
 /// The [package] section
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProjectPackageSection {
@@ -61,6 +74,8 @@ pub struct ProjectDependenciesSection(pub HashMap<String, ProjectDependency>);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProjectFile {
     pub package: ProjectPackageSection,
+    pub lib: Option<ProjectLibSection>,
+    pub bin: Vec<ProjectBinSection>,
     pub dependencies: Option<ProjectDependenciesSection>,
     pub dev_dependencies: Option<ProjectDependenciesSection>,
 }

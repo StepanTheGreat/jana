@@ -21,6 +21,7 @@ use template::{template_config, template_java_code};
 const PACKAGE_REGEX: &str = r#"^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$"#;
 
 /// Which default project to create
+#[derive(Clone, Copy)]
 enum ProjectKind {
     Bin,
     Lib,
@@ -189,7 +190,7 @@ impl CommandHandler for InitCommand {
         }
 
         // Create the project file
-        write_project_file(&path, &template_config(&package, lang))?;
+        write_project_file(&path, &template_config(&package, lang, kind))?;
 
         // Create a gitignore file
         awrite_file(path.join(".gitignore"), TEMPLATE_GITIGNORE, &tmp_file)?;
