@@ -6,7 +6,7 @@ use crate::{
     utils::{awrite_file, prompt},
 };
 
-use std::{fs, io, path};
+use std::{fs, io, path::{self, PathBuf}};
 
 mod template;
 
@@ -65,7 +65,8 @@ impl CommandHandler for InitCommand {
 
         // If the path is not specified - we're going to initialize the project in the current directory
         let path = args.next().cloned().unwrap_or(".".to_owned());
-        let path = ctx.cwd.join(path);
+        // let path = ctx.cwd.join(path);
+        let path = PathBuf::from(path);
 
         // The kind of a project to create (library or binary)
         let mut kind = ProjectKind::Bin;

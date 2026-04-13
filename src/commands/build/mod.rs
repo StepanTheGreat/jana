@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
 use crate::{
     commands::CommandHandler,
@@ -17,8 +17,8 @@ impl CommandHandler for BuildCommand {
         "Build the project"
     }
 
-    fn handle(&mut self, ctx: super::CommandCtx) -> anyhow::Result<()> {
-        let path = ctx.cwd;
+    fn handle(&mut self, _: super::CommandCtx) -> anyhow::Result<()> {
+        let path = PathBuf::default();
 
         let config = read_project_file(&path)?;
         let java = Java::get()?;
